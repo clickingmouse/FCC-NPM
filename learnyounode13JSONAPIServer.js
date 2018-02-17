@@ -74,22 +74,21 @@
    //var filepath = process.argv[3];
   // console.log(filepath);
         var server = http.createServer(function (req, res) {
-         console.log(req.url);
-         console.log(url.parse(req.url, true));
-         var urlObj = url.parse(req.url, true);
+            res.writeHead(200, { 'Content-Type': 'application/json' }) ;
+   //      console.log(req.url);
+    //     console.log(url.parse(req.url, true));
+    console.log(req.method);
+         
+        var urlObj = url.parse(req.url, true);
          if(req.method == "GET"){
-             console.log("line1");
-          var testBody = {  
-       "hour": 14,  
-       "minute": 23,  
-       "second": 15  
-     };
+             
      var pathname = urlObj['pathname'];
      var reqKey = Object.keys(urlObj.query);
      console.log(pathname +" "+reqKey);
      console.log("line2");
      var retObj={};
-     if(reqKey =="iso") {
+//     if(reqKey =="iso") {
+         if (pathname =="/api/parsetime"){
          console.log("========> ISO");
          var data = urlObj.query[reqKey];
          var d = new Date (data);
@@ -105,33 +104,31 @@
          console.log("converting::::::"+ data + " 2 " + d);
          console.log(d.getHours().toString() +"/"+ d.getMinutes().toString()+"/" + d.getSeconds().toString())
          retObj = {
-             hour: d.getHours().toString(),
-             minute:  d.getMinutes().toString(),
-             second: d.getSeconds().toString()
-         };
+             "hour": d.getHours(),
+             "minute":  d.getMinutes(),
+             "second": d.getSeconds()
+             };
          
+  res.end( JSON.stringify(retObj));
          
-     } else if (reqKey == "unixtime"){
+     } else if (pathname == "/api/unixtime"){
+         
          console.log("=======> unixtime");
          var data = urlObj.query[reqKey];
          var d = new Date (data);
          retObj = {
-             unixtime : Math.round(d.getTime() / 1000)
+             "unixtime" : Math.round(d.getTime() )
          }
+           res.end( JSON.stringify(retObj));
+
      }
      
-/*          
-req.on('data', (chunk) => {
-  body.push(chunk);
-}).on('end', () => {
- JSON.stringify()
-  body = Buffer.concat(body).toString().toUpperCase();
-  console.log(body);*/
-  res.writeHead(200, { 'Content-Type': 'application/json' }) ;
-  res.write( JSON.stringify(retObj));
-console.log(retObj);
-//});
+//  res.writeHead(200, { 'Content-Type': 'application/json' }) ;
+//  res.end( JSON.stringify(retObj));
+console.log("pass back:::" + JSON.stringify(retObj));
+
          }
+         
      })  
      server.listen(port) 
  
